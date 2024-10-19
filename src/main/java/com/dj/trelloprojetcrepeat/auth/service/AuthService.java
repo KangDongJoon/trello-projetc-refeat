@@ -1,7 +1,9 @@
 package com.dj.trelloprojetcrepeat.auth.service;
 
+import com.dj.trelloprojetcrepeat.auth.entity.AuthUser;
 import com.dj.trelloprojetcrepeat.auth.request.LoginRequest;
 import com.dj.trelloprojetcrepeat.auth.request.SignupRequest;
+import com.dj.trelloprojetcrepeat.auth.request.WithdrawalRequest;
 import com.dj.trelloprojetcrepeat.auth.response.LoginResponse;
 import com.dj.trelloprojetcrepeat.auth.response.SignupReponse;
 import com.dj.trelloprojetcrepeat.common.exception.CustomException;
@@ -12,6 +14,7 @@ import com.dj.trelloprojetcrepeat.user.entity.User;
 import com.dj.trelloprojetcrepeat.user.enums.UserRole;
 import com.dj.trelloprojetcrepeat.user.enums.UserStatus;
 import com.dj.trelloprojetcrepeat.user.repository.UserRepository;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -37,7 +40,7 @@ public class AuthService {
 
         // email을 통해 중복 가입 확인
         Optional<User> existingUser = userRepository.findByEmail(signupRequest.getEmail());
-        if(existingUser.isPresent()){
+        if (existingUser.isPresent()) {
             throw new CustomException(ErrorCode.AUTH_USER_EXISTING);
         }
 
@@ -69,12 +72,12 @@ public class AuthService {
                 .orElseThrow(() -> new CustomException(ErrorCode.AUTH_USER_NOT_FOUND));
 
         // 비밀번호 확인
-        if(!passwordEncoder.matches(loginRequest.getPassword(), user.getPassword())){
+        if (!passwordEncoder.matches(loginRequest.getPassword(), user.getPassword())) {
             throw new CustomException(ErrorCode.AUTH_BAD_REQUEST_PASSWORD);
         }
 
         // 탈퇴여부 확인
-        if(user.getStatus() == UserStatus.DELETED){
+        if (user.getStatus() == UserStatus.WITHDREAWAL) {
             throw new CustomException(ErrorCode.AUTH_USER_DELETED);
         }
 
@@ -88,5 +91,20 @@ public class AuthService {
         String message = String.format("로그인완료, %s님 환영합니다.", user.getUserName());
 
         return new ApiResponse<>(loginResponse, message);
+    }
+
+    // 회원탈퇴
+    @Transactional
+    public void withdrawal(AuthUser authUser, WithdrawalRequest withdrawalRequest) {
+
+        // 유저 조회
+        User user = userRepository.findById(authUser.getId())
+                .orElseThrow(() -> new CustomException(ErrorCode.AUTH_USER_NOT_FOUND));
+
+        // 비밀번호 확인
+        if (passwordEncoder.matches(withdrawalRequest.getPassword(), user.getPassword())) {
+            user.withdrawal();
+            userRepository.save(user);
+        } else throw new CustomException(ErrorCode.AUTH_BAD_REQUEST_PASSWORD);
     }
 }

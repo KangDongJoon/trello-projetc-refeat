@@ -1,5 +1,6 @@
 package com.dj.trelloprojetcrepeat.user.entity;
 
+import com.dj.trelloprojetcrepeat.auth.entity.AuthUser;
 import com.dj.trelloprojetcrepeat.user.enums.UserRole;
 import com.dj.trelloprojetcrepeat.user.enums.UserStatus;
 import jakarta.persistence.*;
@@ -32,11 +33,23 @@ public class User {
     @Enumerated(EnumType.STRING)
     private UserStatus status = UserStatus.ACTIVE;
 
+    public static User fromAuthUser(AuthUser authUser){
+        return new User(
+                authUser.getUserName(),
+                authUser.getEmail(),
+                "password",
+                authUser.getUserRole()
+        );
+    }
 
     public User(String username, String email, String encodePassword, UserRole userRole) {
         this.userName = username;
         this.email = email;
         this.password = encodePassword;
         this.userRole = userRole;
+    }
+
+    public void withdrawal() {
+        this.status = UserStatus.WITHDREAWAL;
     }
 }
