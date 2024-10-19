@@ -46,7 +46,7 @@ public class JwtSecurityFilter extends OncePerRequestFilter {
                     httpResponse.sendError(HttpServletResponse.SC_UNAUTHORIZED, "유효하지 않은 JWT 토큰입니다.");
                     return;
                 }
-                UserRole userRole = UserRole.of(claims.get("userRole", String.class));
+                UserRole userRole = UserRole.of(userRoleString);
 
 
                 if (userId != null && SecurityContextHolder.getContext().getAuthentication() == null) {
