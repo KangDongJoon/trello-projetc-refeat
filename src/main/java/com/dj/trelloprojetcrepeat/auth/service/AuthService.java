@@ -14,7 +14,6 @@ import com.dj.trelloprojetcrepeat.user.entity.User;
 import com.dj.trelloprojetcrepeat.user.enums.UserRole;
 import com.dj.trelloprojetcrepeat.user.enums.UserStatus;
 import com.dj.trelloprojetcrepeat.user.repository.UserRepository;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
