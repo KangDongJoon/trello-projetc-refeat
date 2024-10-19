@@ -6,8 +6,8 @@ import org.springframework.http.HttpStatus;
 @Getter
 public enum ErrorCode {
 
-    //
-
+    // Auth
+    USER_EXISTING(HttpStatus.CONFLICT, "이미 가입된 유저입니다."),
     //
 
     //
